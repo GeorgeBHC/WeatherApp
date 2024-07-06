@@ -1,66 +1,68 @@
-const apiKey = 'api.openweathermap.org/data/2.5/forecast?q={London}&appid={2167e5cc194afadef5e96d82f7768cc5}';
-const weatherResult = document.getElementById('weatherResult');
-const favoritesList = document.getElementById('favoritesList');
-const searchButton = document.getElementById('searchButton');
+const apiKey = '2167e5cc194afadef5e96d82f7768cc5'; 
+const fetchWeatherBtn = document.getElementById('fetchWeatherBtn');
+const saveWeatherBtn = document.getElementById('saveWeatherBtn');
+const loadWeatherBtn = document.getElementById('loadWeatherBtn');
 const cityInput = document.getElementById('cityInput');
+const weatherDisplay = document.getElementById('weatherDisplay');
 
-searchButton.addEventListener('click', () => {
+fetchWeatherBtn.addEventListener('click', fetchWeather);
+saveWeatherBtn.addEventListener('click', saveWeatherData);
+loadWeatherBtn.addEventListener('click', loadWeatherData);
+
+async function fetchWeather() {
     const city = cityInput.value;
-    if (city) {
-        fetchWeather(city);
+    if (!city) {
+        alert('Please enter a city name');
+        return;
     }
-});
-
-function fetchWeather(city) {
-    fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.cod === '200') {
-                displayWeather(data);
-            } else {
-                weatherResult.innerHTML = '<p>City not found</p>';
-            }
-        })
-        .catch(error => console.error('Error fetching weather data:', error));
+    const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`;
+    
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        displayWeather(data);
+    } catch (error) {
+        alert('Error fetching weather data');
+        console.error(error);
+    }
 }
 
 function displayWeather(data) {
-    const city = data.city.name;
-    const forecasts = data.list.slice(0, 5).map(forecast => {
-        return `<p>${new Date(forecast.dt_txt).toLocaleString()}: ${forecast.weather[0].description}, Temp: ${forecast.main.temp}°C</p>`;
-    }).join('');
-    weatherResult.innerHTML = `
-        <h2>Weather in ${city}</h2>
-        ${forecasts}
-        <button onclick="addFavorite('${city}')">Add to Favorites</button>
-    `;
+    weatherDisplay.innerHTML = '';
+    const cityName = document.createElement('h2');
+    cityName.textContent = data.city.name;
+    weatherDisplay.appendChild(cityName);
+
+    data.list.forEach((item) => {
+        const weatherItem = document.createElement('div');
+        weatherItem.classList.add('weather-item');
+        
+        const date = new Date(item.dt * 1000);
+        weatherItem.innerHTML = `
+            <p><strong>Date:</strong> ${date.toLocaleDateString()}</p>
+            <p><strong>Temperature:</strong> ${item.main.temp} °C</p>
+            <p><strong>Weather:</strong> ${item.weather[0].description}</p>
+        `;
+        
+        weatherDisplay.appendChild(weatherItem);
+    });
 }
 
-function addFavorite(city) {
-    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-    if (!favorites.includes(city)) {
-        favorites.push(city);
-        localStorage.setItem('favorites', JSON.stringify(favorites));
-        renderFavorites();
+function saveWeatherData() {
+    const weatherData = weatherDisplay.innerHTML;
+    if (weatherData) {
+        localStorage.setItem('weatherData', weatherData);
+        alert('Weather data saved');
+    } else {
+        alert('No data to save');
     }
 }
 
-function removeFavorite(city) {
-    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-    favorites = favorites.filter(favorite => favorite !== city);
-    localStorage.setItem('favorites', JSON.stringify(favorites));
-    renderFavorites();
+function loadWeatherData() {
+    const savedWeatherData = localStorage.getItem('weatherData');
+    if (savedWeatherData) {
+        weatherDisplay.innerHTML = savedWeatherData;
+    } else {
+        alert('No saved data found');
+    }
 }
-
-function renderFavorites() {
-    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-    favoritesList.innerHTML = favorites.map(city => `
-        <li>
-            ${city}
-            <button onclick="removeFavorite('${city}')">Remove</button>
-        </li>
-    `).join('');
-}
-
-// Initial render of favorites
-renderFavorites();
