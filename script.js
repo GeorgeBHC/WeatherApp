@@ -1,14 +1,21 @@
+// cheia api de la OpenWeather
 const apiKey = '2167e5cc194afadef5e96d82f7768cc5'; 
+
+// elemente DOM
 const fetchWeatherBtn = document.getElementById('fetchWeatherBtn');
 const saveWeatherBtn = document.getElementById('saveWeatherBtn');
 const loadWeatherBtn = document.getElementById('loadWeatherBtn');
 const cityInput = document.getElementById('cityInput');
 const weatherDisplay = document.getElementById('weatherDisplay');
+const backToSearchBtn = document.getElementById('backToSearchBtn');
 
+// functiile la click ale butoanelor
 fetchWeatherBtn.addEventListener('click', fetchWeather);
 saveWeatherBtn.addEventListener('click', saveWeatherData);
 loadWeatherBtn.addEventListener('click', loadWeatherData);
+backToSearchBtn.addEventListener('click', backToSearch);
 
+// ia inf dp site ul OpenWeather
 async function fetchWeather() {
     const city = cityInput.value;
     if (!city) {
@@ -27,6 +34,7 @@ async function fetchWeather() {
     }
 }
 
+// functia care arata datele vremii 
 function displayWeather(data) {
     weatherDisplay.innerHTML = '';
     const cityName = document.createElement('h2');
@@ -34,20 +42,25 @@ function displayWeather(data) {
     weatherDisplay.appendChild(cityName);
 
     data.list.forEach((item) => {
-        const weatherItem = document.createElement('div');
-        weatherItem.classList.add('weather-item');
+        const weatherCard = document.createElement('div');
+        weatherCard.classList.add('weather-card');
         
         const date = new Date(item.dt * 1000);
-        weatherItem.innerHTML = `
+        weatherCard.innerHTML = `
+            <h2>${data.city.name}</h2>
             <p><strong>Date:</strong> ${date.toLocaleDateString()}</p>
             <p><strong>Temperature:</strong> ${item.main.temp} °C</p>
             <p><strong>Weather:</strong> ${item.weather[0].description}</p>
         `;
         
-        weatherDisplay.appendChild(weatherItem);
+        weatherDisplay.appendChild(weatherCard);
     });
+
+    document.querySelector('.input-container').classList.add('hidden');
+    backToSearchBtn.classList.remove('hidden');
 }
 
+// funtia care salveaza datele
 function saveWeatherData() {
     const weatherData = weatherDisplay.innerHTML;
     if (weatherData) {
@@ -58,6 +71,8 @@ function saveWeatherData() {
     }
 }
 
+
+// functia care da load
 function loadWeatherData() {
     const savedWeatherData = localStorage.getItem('weatherData');
     if (savedWeatherData) {
@@ -66,3 +81,12 @@ function loadWeatherData() {
         alert('No saved data found');
     }
 }
+
+
+// funtia prin care se revine la pagina initiala ca cautare
+function backToSearch() {
+    weatherDisplay.innerHTML = '';
+    document.querySelector('.input-container').classList.remove('hidden');
+    backToSearchBtn.classList.add('hidden');
+}
+

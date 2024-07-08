@@ -6,35 +6,123 @@ body {
     height: 100vh;
     margin: 0;
     background: #f0f0f0;
+    background-image: url(backgr.jpg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .container {
-    text-align: center;
-    background: white;
+     text-align: center;
+    background: rgba(255, 255, 255, 0.5); 
     padding: 20px;
-    border-radius: 8px;
+    border-radius: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+
+} 
+
+    
 
 .input-container {
     margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
 }
 
 .input-container input {
     padding: 10px;
     font-size: 16px;
+    margin-bottom: 10px;
 }
 
 .input-container button {
     padding: 10px 15px;
     font-size: 16px;
-    margin-left: 5px;
+    margin: 5px 0;
     cursor: pointer;
 }
 
 #weatherDisplay {
     margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 }
+
+.weather-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    padding: 15px;
+    width: 200px;
+    text-align: left;
+}
+
+.weather-card h2 {
+    text-align: center;
+}
+
+.hidden {
+    display: none;
+}
+
+#backToSearchBtn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+
+button {
+    width: 150px;
+    height: 60px;
+    border: 3px solid #315cfd;
+    border-radius: 45px;
+    transition: all 0.3s;
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.3);
+    font-size: 1.2em;
+    font-weight: 550;
+    font-family: 'Montserrat', sans-serif;
+  }
+  
+  button:hover {
+    background: #315cfd;
+    color: white;
+    font-size: 1.15em;
+  }
+
+  .input {
+    max-width: 190px;
+    height: 30px;
+    border: 2px solid transparent;
+    outline: none;
+    border-bottom: 2px solid #3f3f3f;
+    caret-color: #3f3f3f;
+    background-color: rgba(255, 255, 255, 0.6);
+    padding: 5px;
+    transition: .5s linear;
+    font-family: monospace;
+    letter-spacing: 1px;
+    text-align: center;
+  }
+  
+  .input:focus {
+    border: 2px solid #000000;
+    caret-color: #000000;
+    color: #000000;
+    box-shadow: 4px 4px 10px #070707;
+    background-color: rgba(255, 255, 255, 0.6);
+  }
+  
+  .input:focus::placeholder {
+    color: #000000;
+  }
+  
 
 @media (max-width: 600px) {
     .input-container {
@@ -45,5 +133,8 @@ body {
         margin-top: 10px;
         margin-left: 0;
     }
-}
 
+    .weather-card {
+        width: 100%;
+    }
+}
