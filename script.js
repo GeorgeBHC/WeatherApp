@@ -9,6 +9,8 @@ const cityInput = document.getElementById('cityInput');
 const weatherDisplay = document.getElementById('weatherDisplay');
 const backToSearchBtn = document.getElementById('backToSearchBtn');
 const header = document.querySelector('h1');
+const currentTime = document.getElementById('currentTime');
+const currentWeather = document.getElementById('currentWeather');
 
 // functiile de click
 fetchWeatherBtn.addEventListener('click', fetchWeather);
@@ -40,7 +42,6 @@ function translateWeather(description) {
     return weatherTranslations[description] || description;
 }
 
-
 // ia datele de pe site
 async function fetchWeather() {
     const city = cityInput.value;
@@ -54,26 +55,24 @@ async function fetchWeather() {
         const response = await fetch(url);
         const data = await response.json();
         displayWeather(data);
+        displayCurrentWeather(data);
     } catch (error) {
         alert('Error fetching weather data');
         console.error(error);
     }
 }
 
-// zilele sapt 
+// zilele sapt
 function getDayOfWeek(date) {
-    const daysOfWeek = ['Duminică', 'Luni', 'Marți', 'Miercuri', 'Joi', 'Vineri', 'Sâmbătă', ];
+    const daysOfWeek = ['Joi', 'Vineri', 'Sâmbătă', 'Duminică', 'Luni', 'Marți', 'Miercuri'];
     return daysOfWeek[date.getDay()];
 }
 
-
-
-// arata datele pe zile
+// arata datele pe zile 
 function displayWeather(data) {
     weatherDisplay.innerHTML = '';
     header.textContent = data.city.name; 
 
-    // arata doar 1 card pe zi
     const groupedData = new Map();
 
     data.list.forEach((item) => {
@@ -84,7 +83,6 @@ function displayWeather(data) {
         }
     });
 
-    
     const daysOfWeek = ['Luni', 'Marți', 'Miercuri', 'Joi', 'Vineri', 'Sâmbătă', 'Duminică'];
     const today = new Date();
     const displayedDays = [];
@@ -110,9 +108,19 @@ function displayWeather(data) {
         displayedDays.push(dayName);
     }
 
-
     document.querySelector('.input-container').classList.add('hidden');
     backToSearchBtn.classList.remove('hidden');
+}
+
+function displayCurrentWeather(data) {
+    const current = data.list[0];
+    const date = new Date(current.dt * 1000);
+
+    currentWeather.innerHTML = `
+        <p><strong>Ora:</strong> ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+        <p><strong>Temperatură:</strong> ${current.main.temp} °C</p>
+        <p><strong>Prognoza:</strong> ${translateWeather(current.weather[0].description)}</p>
+    `;
 }
 
 // salveaza datele in local storage
@@ -126,7 +134,8 @@ function saveWeatherData() {
     }
 }
 
-// incarca datele din local storage
+
+// load la datele din storage
 function loadWeatherData() {
     const savedWeatherData = localStorage.getItem('weatherData');
     if (savedWeatherData) {
@@ -136,10 +145,19 @@ function loadWeatherData() {
     }
 }
 
-// inapoi la search
+// inapoi la pagina de search
 function backToSearch() {
     weatherDisplay.innerHTML = '';
     header.textContent = 'Weather App'; 
     document.querySelector('.input-container').classList.remove('hidden');
     backToSearchBtn.classList.add('hidden');
 }
+
+// actualizeaza ora curenta
+function updateTime() {
+    const now = new Date();
+    currentTime.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+
+setInterval(updateTime, 1000);
+updateTime();
